@@ -87,22 +87,33 @@ export default function ExpenseFormModal({ isOpen, onClose, onSuccess, initialDa
     try {
       if (initialData) {
         await supabase.from('rules').update(ruleData).eq('id', initialData.id);
-        const currentMonth = format(new Date(), 'yyyy-MM');
         
-        // 이번 달 내역도 업데이트
-        await supabase.from('transactions')
-            .update({
-                title: ruleData.title,
-                category: ruleData.category,
-                type: ruleData.type,
-                amount: ruleData.type === 'FIXED' ? ruleData.amount : undefined,
-                date: `${currentMonth}-${payDay.padStart(2, '0')}` // 날짜도 함께 업데이트
-            })
-            .eq('rule_id', initialData.id)
-            .like('date', `${currentMonth}%`);
-
         if (initialTransaction) {
-            await supabase.from('transactions').update({ memo: monthlyMemo }).eq('id', initialTransaction.id);
+            // 목록에서 클릭해서 수정하는 경우: 해당 지출 내역(ID)을 직접 업데이트
+            const originalMonth = initialTransaction.date.substring(0, 7); // "YYYY-MM" 유지
+            await supabase.from('transactions')
+                .update({
+                    title: ruleData.title,
+                    category: ruleData.category,
+                    type: ruleData.type,
+                    amount: ruleData.type === 'FIXED' ? ruleData.amount : undefined,
+                    date: `${originalMonth}-${payDay.padStart(2, '0')}`,
+                    memo: monthlyMemo
+                })
+                .eq('id', initialTransaction.id);
+        } else {
+            // 계정 관리 탭 등에서 규칙만 수정하는 경우: 현재 달(Real-world)의 내역을 찾아 업데이트
+            const currentMonth = format(new Date(), 'yyyy-MM');
+            await supabase.from('transactions')
+                .update({
+                    title: ruleData.title,
+                    category: ruleData.category,
+                    type: ruleData.type,
+                    amount: ruleData.type === 'FIXED' ? ruleData.amount : undefined,
+                    date: `${currentMonth}-${payDay.padStart(2, '0')}`
+                })
+                .eq('rule_id', initialData.id)
+                .like('date', `${currentMonth}%`);
         }
       } else {
         const newId = uuidv4();
