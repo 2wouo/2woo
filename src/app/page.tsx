@@ -25,6 +25,8 @@ import AccountsView from '@/components/AccountsView';
 import { cn } from '@/lib/utils';
 import { subMonths, addMonths, format } from 'date-fns';
 
+import SettingsModal from '@/components/SettingsModal';
+
 const CATEGORY_MAP: Record<string, string> = {
     'HOUSING': '주거',
     'SUBSCRIPTION': '구독',
@@ -36,6 +38,7 @@ const CATEGORY_MAP: Record<string, string> = {
 export default function Home() {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [editRule, setEditRule] = useState<ExpenseRule | null>(null);
   const [editTransaction, setEditTransaction] = useState<Transaction | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<Transaction | null>(null);
@@ -136,6 +139,26 @@ export default function Home() {
     fetchData();
   };
 
+  const handleDataReset = async () => {
+    setIsLoading(true);
+    try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+            await supabase.from('transactions').delete().eq('user_id', user.id);
+            await supabase.from('rules').delete().eq('user_id', user.id);
+            alert('모든 데이터가 초기화되었습니다.');
+            fetchData();
+            // Force reload to clear any component states if necessary, or just refetch
+            window.location.reload(); 
+        }
+    } catch (error) {
+        console.error('Reset failed:', error);
+        alert('데이터 초기화 중 오류가 발생했습니다.');
+    } finally {
+        setIsLoading(false);
+    }
+  };
+
   return (
     <div className="flex flex-col h-full p-4">
       {/* Header */}
@@ -145,8 +168,11 @@ export default function Home() {
         </button>
         <h1 className="text-xl font-bold">{format(currentDate, 'yyyy.MM')}</h1>
         <div className="flex items-center">
-             <button onClick={handleNextMonth} className="p-2 hover:bg-white/10 rounded-full transition-colors">
+             <button onClick={handleNextMonth} className="p-2 hover:bg-white/10 rounded-full transition-colors mr-1">
                 <ChevronRight className="w-6 h-6" />
+            </button>
+            <button onClick={() => setIsSettingsOpen(true)} className="p-2 hover:bg-white/10 rounded-full transition-colors">
+                <Settings className="w-5 h-5 text-text-secondary" />
             </button>
         </div>
       </header>
@@ -236,6 +262,12 @@ export default function Home() {
         title={deleteTarget?.title || ''}
         onClose={() => setDeleteTarget(null)}
         onConfirm={handleDelete}
+      />
+
+      <SettingsModal 
+        isOpen={isSettingsOpen}
+        onClose={() => setIsSettingsOpen(false)}
+        onDataReset={handleDataReset}
       />
     </div>
   );

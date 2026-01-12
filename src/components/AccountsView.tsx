@@ -1,46 +1,16 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { Eye, EyeOff, Copy, ExternalLink, KeyRound, CreditCard, LogOut, User, AlertTriangle, Trash2, RefreshCw } from 'lucide-react';
+import { Eye, EyeOff, Copy, ExternalLink, KeyRound, CreditCard } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { mapRule, type ExpenseRule } from '@/lib/db';
 import { cn } from '@/lib/utils';
 import ExpenseFormModal from './ExpenseFormModal';
-import { useRouter } from 'next/navigation';
 
 export default function AccountsView() {
   const [editingRule, setEditingRule] = useState<ExpenseRule | null>(null);
   const [rules, setRules] = useState<ExpenseRule[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [userEmail, setUserEmail] = useState<string | null>(null);
-  const router = useRouter();
-
-  const handleLogout = async () => {
-    if (confirm('로그아웃 하시겠습니까?')) {
-        await supabase.auth.signOut();
-        router.push('/login');
-    }
-  };
-
-  const handleResetData = async () => {
-    if (confirm('정말로 모든 데이터를 초기화하시겠습니까?\n이 작업은 되돌릴 수 없으며, 모든 지출 내역과 설정이 삭제됩니다.')) {
-        setIsLoading(true);
-        try {
-            const { data: { user } } = await supabase.auth.getUser();
-            if (user) {
-                await supabase.from('transactions').delete().eq('user_id', user.id);
-                await supabase.from('rules').delete().eq('user_id', user.id);
-                alert('모든 데이터가 초기화되었습니다.');
-                fetchRules(); // 리스트 갱신
-            }
-        } catch (error) {
-            console.error('Reset failed:', error);
-            alert('데이터 초기화 중 오류가 발생했습니다.');
-        } finally {
-            setIsLoading(false);
-        }
-    }
-  };
 
   const fetchRules = useCallback(async () => {
     setIsLoading(true);
@@ -60,9 +30,6 @@ export default function AccountsView() {
 
   useEffect(() => {
     fetchRules();
-    supabase.auth.getUser().then(({ data: { user } }) => {
-        setUserEmail(user?.email || null);
-    });
   }, [fetchRules]);
 
   const sortedRules = [...rules].sort((a, b) => {
@@ -74,80 +41,28 @@ export default function AccountsView() {
   });
 
   return (
-    <div className="space-y-8 pb-24 animate-in fade-in duration-500">
-      {/* Profile Card */}
-      <div className="bg-surface border border-border rounded-2xl p-6 flex items-center justify-between shadow-sm">
-        <div className="flex items-center space-x-4">
-            <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-                <User className="w-6 h-6" />
-            </div>
-            <div>
-                <p className="text-xs text-text-secondary uppercase tracking-wider mb-0.5">Logged in as</p>
-                <p className="font-bold text-lg text-white">{userEmail || 'User'}</p>
-            </div>
-        </div>
-        <button 
-            onClick={handleLogout} 
-            className="p-3 text-text-secondary hover:text-danger hover:bg-white/5 rounded-xl transition-all"
-            aria-label="로그아웃"
-        >
-            <LogOut className="w-5 h-5" />
-        </button>
+    <div className="space-y-4 pb-24 animate-in fade-in duration-500">
+      <div className="text-sm text-text-secondary px-1">
+        결제 사이트 접속 정보와 결제 수단 메모를 관리합니다.
       </div>
 
-      <div className="space-y-4">
-        <div className="px-1">
-            <h3 className="font-bold text-lg mb-1">계정 정보 관리</h3>
-            <p className="text-sm text-text-secondary">
-                지출 항목에 연결된 결제 사이트 계정과 메모를 관리합니다.
-            </p>
-        </div>
-
-        <div className="space-y-3">
-            {isLoading ? (
-                <div className="h-32 flex items-center justify-center text-text-secondary text-sm">로딩 중...</div>
-            ) : sortedRules.map((rule) => (
-            <AccountItem 
-                key={rule.id} 
-                rule={rule} 
-                onEdit={() => setEditingRule(rule)}
-            />
-            ))}
-            
-            {!isLoading && sortedRules.length === 0 && (
-            <div className="h-40 flex flex-col items-center justify-center text-text-secondary space-y-2 border border-dashed border-border rounded-2xl">
-                <KeyRound className="w-8 h-8 opacity-20" />
-                <p className="text-sm">등록된 항목이 없습니다.</p>
-            </div>
-            )}
-        </div>
-      </div>
-
-      {/* Danger Zone */}
-      <div className="space-y-4 pt-4 border-t border-border/50">
-        <div className="px-1 flex items-center text-danger">
-            <AlertTriangle className="w-5 h-5 mr-2" />
-            <h3 className="font-bold text-lg">위험 구역</h3>
-        </div>
+      <div className="space-y-3">
+        {isLoading ? (
+            <div className="h-32 flex items-center justify-center text-text-secondary text-sm">로딩 중...</div>
+        ) : sortedRules.map((rule) => (
+          <AccountItem 
+            key={rule.id} 
+            rule={rule} 
+            onEdit={() => setEditingRule(rule)}
+          />
+        ))}
         
-        <div className="card border-danger/30 overflow-hidden divide-y divide-border/50">
-            <div className="p-4 flex items-center justify-between hover:bg-white/5 transition-colors cursor-pointer" onClick={handleResetData}>
-                <div>
-                    <h4 className="font-bold text-danger text-sm">모든 데이터 초기화</h4>
-                    <p className="text-xs text-text-secondary mt-0.5">등록된 모든 지출 내역과 설정을 삭제합니다.</p>
-                </div>
-                <RefreshCw className="w-5 h-5 text-text-secondary" />
-            </div>
-            {/* 
-            <div className="p-4 flex items-center justify-between hover:bg-white/5 transition-colors cursor-pointer opacity-50 cursor-not-allowed">
-                <div>
-                    <h4 className="font-bold text-danger text-sm">회원 탈퇴 (준비 중)</h4>
-                    <p className="text-xs text-text-secondary mt-0.5">계정과 모든 데이터를 영구적으로 삭제합니다.</p>
-                </div>
-                <Trash2 className="w-5 h-5 text-text-secondary" />
-            </div>
-            */}
-        </div>
+        {!isLoading && sortedRules.length === 0 && (
+          <div className="h-40 flex flex-col items-center justify-center text-text-secondary space-y-2">
+             <KeyRound className="w-8 h-8 opacity-20" />
+             <p className="text-sm">등록된 항목이 없습니다.</p>
+          </div>
+        )}
       </div>
 
       <ExpenseFormModal
