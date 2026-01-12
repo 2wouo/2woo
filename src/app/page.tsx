@@ -145,11 +145,8 @@ export default function Home() {
         </button>
         <h1 className="text-xl font-bold">{format(currentDate, 'yyyy.MM')}</h1>
         <div className="flex items-center">
-             <button onClick={handleNextMonth} className="p-2 hover:bg-white/10 rounded-full transition-colors mr-1">
+             <button onClick={handleNextMonth} className="p-2 hover:bg-white/10 rounded-full transition-colors">
                 <ChevronRight className="w-6 h-6" />
-            </button>
-            <button className="p-2 hover:bg-white/10 rounded-full transition-colors">
-                <Settings className="w-5 h-5 text-text-secondary" />
             </button>
         </div>
       </header>
