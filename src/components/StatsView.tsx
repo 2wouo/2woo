@@ -69,14 +69,25 @@ export default function StatsView({ transactions, prevMonthTransactions }: Stats
   return (
     <div className="space-y-8 pb-20 animate-in fade-in duration-500">
       {/* Overview Cards */}
-      <div className="grid grid-cols-2 gap-4">
-        <div className="card p-4">
-            <span className="text-[10px] text-text-secondary uppercase">고정 지출</span>
-            <div className="text-lg font-bold mt-1">{totalFixed.toLocaleString()}원</div>
+      <div className="space-y-4">
+        <div className="card p-5 bg-surface/50 border-primary/20 flex justify-between items-center">
+             <div>
+                <span className="text-primary/70 text-[10px] font-bold uppercase tracking-wider">이번 달 총 지출</span>
+                <div className="text-2xl font-bold text-white mt-0.5">
+                    {currentTotal.toLocaleString()} <span className="text-sm font-normal opacity-60">원</span>
+                </div>
+            </div>
         </div>
-        <div className="card p-4">
-            <span className="text-[10px] text-text-secondary uppercase">변동 지출</span>
-            <div className="text-lg font-bold mt-1 text-variable">{totalVariable.toLocaleString()}원</div>
+
+        <div className="grid grid-cols-2 gap-4">
+            <div className="card p-4">
+                <span className="text-[10px] text-text-secondary uppercase">고정 지출</span>
+                <div className="text-lg font-bold mt-1">{totalFixed.toLocaleString()}원</div>
+            </div>
+            <div className="card p-4">
+                <span className="text-[10px] text-text-secondary uppercase">변동 지출</span>
+                <div className="text-lg font-bold mt-1 text-variable">{totalVariable.toLocaleString()}원</div>
+            </div>
         </div>
       </div>
 

@@ -210,20 +210,6 @@ export default function Home() {
                         </div>
                     )}
                 </div>
-                <div className="grid grid-cols-2 gap-3">
-                    <div className="bg-surface border border-border p-4 rounded-2xl">
-                        <span className="text-text-secondary text-[10px] font-bold uppercase tracking-wider">고정 지출</span>
-                        <div className="text-lg font-bold text-white mt-0.5">
-                            {transactions.filter(t => t.type === 'FIXED').reduce((sum, t) => sum + t.amount, 0).toLocaleString()} <span className="text-xs font-normal opacity-50">원</span>
-                        </div>
-                    </div>
-                    <div className="bg-variable/5 border border-variable/20 p-4 rounded-2xl">
-                        <span className="text-variable/70 text-[10px] font-bold uppercase tracking-wider">변동 지출</span>
-                        <div className="text-lg font-bold text-variable mt-0.5">
-                            {transactions.filter(t => t.type === 'VARIABLE').reduce((sum, t) => sum + t.amount, 0).toLocaleString()} <span className="text-xs font-normal opacity-50">원</span>
-                        </div>
-                    </div>
-                </div>
             </section>
 
             {/* Transaction List */}
