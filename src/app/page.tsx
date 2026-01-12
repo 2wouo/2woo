@@ -195,20 +195,34 @@ export default function Home() {
 
       {activeTab === 'LIST' ? (
           <div className="flex flex-col flex-1 space-y-6 animate-in fade-in duration-300">
-            {/* Summary Card */}
-            <section className="bg-primary/10 p-6 rounded-2xl border border-primary/20 shadow-sm">
-                <div className="flex justify-between items-start">
+            {/* Summary Cards */}
+            <section className="grid grid-cols-1 gap-3">
+                <div className="bg-primary/10 p-5 rounded-2xl border border-primary/20 shadow-sm flex justify-between items-center">
                     <div>
-                        <span className="text-primary/70 text-xs font-medium uppercase tracking-wider">이번 달 지출 총액</span>
-                        <div className="mt-1 text-4xl font-bold text-white">
-                            {totalAmount.toLocaleString()} <span className="text-xl font-normal opacity-60">원</span>
+                        <span className="text-primary/70 text-[10px] font-bold uppercase tracking-wider">이번 달 총액</span>
+                        <div className="text-2xl font-bold text-white mt-0.5">
+                            {totalAmount.toLocaleString()} <span className="text-sm font-normal opacity-60">원</span>
                         </div>
                     </div>
                     {pendingCount > 0 && (
-                        <div className="px-3 py-1 bg-primary text-white text-[10px] font-bold rounded-full">
+                        <div className="px-2.5 py-1 bg-primary text-white text-[10px] font-bold rounded-lg">
                             미입력 {pendingCount}
                         </div>
                     )}
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                    <div className="bg-surface border border-border p-4 rounded-2xl">
+                        <span className="text-text-secondary text-[10px] font-bold uppercase tracking-wider">고정 지출</span>
+                        <div className="text-lg font-bold text-white mt-0.5">
+                            {transactions.filter(t => t.type === 'FIXED').reduce((sum, t) => sum + t.amount, 0).toLocaleString()} <span className="text-xs font-normal opacity-50">원</span>
+                        </div>
+                    </div>
+                    <div className="bg-variable/5 border border-variable/20 p-4 rounded-2xl">
+                        <span className="text-variable/70 text-[10px] font-bold uppercase tracking-wider">변동 지출</span>
+                        <div className="text-lg font-bold text-variable mt-0.5">
+                            {transactions.filter(t => t.type === 'VARIABLE').reduce((sum, t) => sum + t.amount, 0).toLocaleString()} <span className="text-xs font-normal opacity-50">원</span>
+                        </div>
+                    </div>
                 </div>
             </section>
 
@@ -303,13 +317,20 @@ function TransactionItem({ transaction, onUpdateAmount, onEdit, onDelete }: {
     return (
         <div onClick={() => onEdit(transaction)} className={cn("card p-4 flex items-center justify-between group cursor-pointer", isOverdue ? (isVariable ? "border-variable/50 bg-variable/5 shadow-sm" : "border-primary/50 bg-primary/5 shadow-sm") : isUpcoming ? "opacity-70" : "")}>
             <div className="flex items-center space-x-4">
-                <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center", isOverdue ? (isVariable ? "bg-variable text-white" : "bg-primary text-white") : (isVariable ? "bg-white/5 text-variable" : "bg-white/5 text-primary"))}>
+                <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center", 
+                    isOverdue 
+                        ? (isVariable ? "bg-variable text-white" : "bg-primary text-white") 
+                        : (isVariable ? "bg-variable/10 text-variable" : "bg-primary/10 text-primary")
+                )}>
                     {isPending ? <Circle className="w-5 h-5" /> : <CheckCircle2 className="w-5 h-5" />}
                 </div>
                 <div>
                     <h3 className="font-medium text-sm">{transaction.title}</h3>
                     <div className="flex items-center space-x-2 text-[10px] text-text-secondary uppercase">
-                        <span className={isOverdue ? (isVariable ? "text-variable font-bold" : "text-primary font-bold") : ""}>{transaction.date.split('-')[2]}일</span>
+                        <span className={cn(
+                            isOverdue && (isVariable ? "text-variable font-bold" : "text-primary font-bold"),
+                            !isOverdue && (isVariable ? "text-variable/70" : "text-primary/70")
+                        )}>{transaction.date.split('-')[2]}일</span>
                         <span>•</span>
                         <span>{CATEGORY_MAP[transaction.category]}</span>
                     </div>
