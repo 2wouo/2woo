@@ -249,6 +249,7 @@ function TransactionItem({ transaction, onUpdateAmount, onEdit, onDelete }: {
     const isPending = transaction.status === 'PENDING';
     const isOverdue = isPending && transaction.date < todayStr;
     const isUpcoming = isPending && transaction.date >= todayStr;
+    const isVariable = transaction.type === 'VARIABLE';
 
     const handleBlur = () => {
         const val = Number(editValue);
@@ -259,26 +260,26 @@ function TransactionItem({ transaction, onUpdateAmount, onEdit, onDelete }: {
     };
 
     return (
-        <div onClick={() => onEdit(transaction)} className={cn("card p-4 flex items-center justify-between group cursor-pointer", isOverdue ? "border-primary/50 bg-primary/5 shadow-sm" : isUpcoming ? "opacity-70" : "")}>
+        <div onClick={() => onEdit(transaction)} className={cn("card p-4 flex items-center justify-between group cursor-pointer", isOverdue ? (isVariable ? "border-variable/50 bg-variable/5 shadow-sm" : "border-primary/50 bg-primary/5 shadow-sm") : isUpcoming ? "opacity-70" : "")}>
             <div className="flex items-center space-x-4">
-                <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center", isOverdue ? "bg-primary text-white" : "bg-white/5 text-primary")}>
+                <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center", isOverdue ? (isVariable ? "bg-variable text-white" : "bg-primary text-white") : (isVariable ? "bg-white/5 text-variable" : "bg-white/5 text-primary"))}>
                     {isPending ? <Circle className="w-5 h-5" /> : <CheckCircle2 className="w-5 h-5" />}
                 </div>
                 <div>
                     <h3 className="font-medium text-sm">{transaction.title}</h3>
                     <div className="flex items-center space-x-2 text-[10px] text-text-secondary uppercase">
-                        <span className={isOverdue ? "text-primary font-bold" : ""}>{transaction.date.split('-')[2]}일</span>
+                        <span className={isOverdue ? (isVariable ? "text-variable font-bold" : "text-primary font-bold") : ""}>{transaction.date.split('-')[2]}일</span>
                         <span>•</span>
                         <span>{CATEGORY_MAP[transaction.category]}</span>
                     </div>
                 </div>
             </div>
             <div className="flex items-center space-x-3">
-                <div className="text-right" onClick={(e) => { e.stopPropagation(); if (transaction.type === 'VARIABLE') setIsEditingAmount(true); }}>
+                <div className="text-right" onClick={(e) => { e.stopPropagation(); if (isVariable) setIsEditingAmount(true); }}>
                     {isEditingAmount || (isPending && transaction.amount === 0 && !isUpcoming) ? (
-                        <input autoFocus type="number" value={editValue} onChange={(e) => setEditValue(e.target.value)} onBlur={handleBlur} onKeyDown={(e) => e.key === 'Enter' && handleBlur()} className="bg-black border border-primary rounded-md px-2 py-1 w-20 text-right text-sm" />
+                        <input autoFocus type="number" value={editValue} onChange={(e) => setEditValue(e.target.value)} onBlur={handleBlur} onKeyDown={(e) => e.key === 'Enter' && handleBlur()} className={cn("bg-black border rounded-md px-2 py-1 w-20 text-right text-sm", isVariable ? "border-variable" : "border-primary")} />
                     ) : (
-                        <div className={cn("text-base font-semibold", isOverdue ? "text-primary" : "text-white")}>
+                        <div className={cn("text-base font-semibold", isOverdue ? (isVariable ? "text-variable" : "text-primary") : "text-white")}>
                             {transaction.amount > 0 ? transaction.amount.toLocaleString() : "예정"} 
                             {transaction.amount > 0 && <span className="ml-1 text-[10px] font-normal opacity-70">원</span>}
                         </div>

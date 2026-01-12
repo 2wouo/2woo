@@ -76,7 +76,7 @@ export default function StatsView({ transactions, prevMonthTransactions }: Stats
         </div>
         <div className="card p-4">
             <span className="text-[10px] text-text-secondary uppercase">변동 지출</span>
-            <div className="text-lg font-bold mt-1 text-primary">{totalVariable.toLocaleString()}원</div>
+            <div className="text-lg font-bold mt-1 text-variable">{totalVariable.toLocaleString()}원</div>
         </div>
       </div>
 
@@ -186,7 +186,7 @@ export default function StatsView({ transactions, prevMonthTransactions }: Stats
                     <Bar 
                         dataKey="amount" 
                         radius={[4, 4, 0, 0]} 
-                        fill="#A78BFA" 
+                        fill="#F472B6" 
                         barSize={40}
                     >
                         <LabelList dataKey="amount" position="top" formatter={formatAmount} style={{ fill: '#fff', fontSize: '12px', fontWeight: 'bold' }} />

@@ -151,7 +151,7 @@ export default function ExpenseFormModal({ isOpen, onClose, onSuccess, initialDa
               <label className="block text-sm text-text-secondary mb-1.5 ml-1">유형</label>
               <div className="flex h-[50px] bg-black border border-border rounded-xl p-1">
                 <button type="button" onClick={() => setType('FIXED')} className={cn("flex-1 text-sm rounded-lg transition-colors", type === 'FIXED' ? "bg-primary text-white" : "text-text-secondary hover:text-white")}>고정</button>
-                <button type="button" onClick={() => setType('VARIABLE')} className={cn("flex-1 text-sm rounded-lg transition-colors", type === 'VARIABLE' ? "bg-primary text-white" : "text-text-secondary hover:text-white")}>변동</button>
+                <button type="button" onClick={() => setType('VARIABLE')} className={cn("flex-1 text-sm rounded-lg transition-colors", type === 'VARIABLE' ? "bg-variable text-white" : "text-text-secondary hover:text-white")}>변동</button>
               </div>
             </div>
           </div>
