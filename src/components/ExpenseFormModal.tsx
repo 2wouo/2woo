@@ -171,7 +171,7 @@ export default function ExpenseFormModal({ isOpen, onClose, onSuccess, initialDa
           <div className="grid grid-cols-2 gap-4">
              <div>
                 <label className="block text-sm text-text-secondary mb-1.5 ml-1">시작 월</label>
-                <input required type="month" value={startDate} onChange={(e) => setStartDate(e.target.value)} className="w-full h-[50px] bg-black border border-border rounded-xl px-4 outline-none" />
+                <input required type="month" value={startDate} onChange={(e) => setStartDate(e.target.value)} className="w-full min-w-0 h-[50px] bg-black border border-border rounded-xl px-4 outline-none" />
             </div>
             <div>
                 <label className="block text-sm text-text-secondary mb-1.5 ml-1">반복 설정</label>
