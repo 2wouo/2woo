@@ -138,32 +138,32 @@ export default function ExpenseFormModal({ isOpen, onClose, onSuccess, initialDa
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
             <label className="block text-sm text-text-secondary mb-1.5 ml-1">항목명</label>
-            <input required type="text" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="예: 월세, 넷플릭스" className="w-full bg-black border border-border rounded-xl px-4 py-3 focus:border-primary outline-none" />
+            <input required type="text" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="예: 월세, 넷플릭스" className="w-full h-[50px] bg-black border border-border rounded-xl px-4 focus:border-primary outline-none" />
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm text-text-secondary mb-1.5 ml-1">카테고리</label>
-              <select value={category} onChange={(e) => setCategory(e.target.value as Category)} className="w-full bg-black border border-border rounded-xl px-4 py-3 outline-none">
+              <select value={category} onChange={(e) => setCategory(e.target.value as Category)} className="w-full h-[50px] bg-black border border-border rounded-xl px-4 outline-none">
                 {CATEGORIES.map((cat) => <option key={cat.value} value={cat.value}>{cat.label}</option>)}
               </select>
             </div>
             <div>
               <label className="block text-sm text-text-secondary mb-1.5 ml-1">유형</label>
-              <div className="flex bg-black border border-border rounded-xl p-1">
-                <button type="button" onClick={() => setType('FIXED')} className={cn("flex-1 py-2 text-sm rounded-lg", type === 'FIXED' ? "bg-primary text-white" : "text-text-secondary")}>고정</button>
-                <button type="button" onClick={() => setType('VARIABLE')} className={cn("flex-1 py-2 text-sm rounded-lg", type === 'VARIABLE' ? "bg-primary text-white" : "text-text-secondary")}>변동</button>
+              <div className="flex h-[50px] bg-black border border-border rounded-xl p-1">
+                <button type="button" onClick={() => setType('FIXED')} className={cn("flex-1 text-sm rounded-lg transition-colors", type === 'FIXED' ? "bg-primary text-white" : "text-text-secondary hover:text-white")}>고정</button>
+                <button type="button" onClick={() => setType('VARIABLE')} className={cn("flex-1 text-sm rounded-lg transition-colors", type === 'VARIABLE' ? "bg-primary text-white" : "text-text-secondary hover:text-white")}>변동</button>
               </div>
             </div>
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
                 <label className="block text-sm text-text-secondary mb-1.5 ml-1">{type === 'FIXED' ? '금액' : '예상 금액 (선택)'}</label>
-                <input type="number" value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="0" className="w-full bg-black border border-border rounded-xl px-4 py-3 outline-none" />
+                <input type="number" value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="0" className="w-full h-[50px] bg-black border border-border rounded-xl px-4 outline-none" />
             </div>
             <div>
                 <label className="block text-sm text-text-secondary mb-1.5 ml-1">결제일</label>
                 <div className="relative">
-                    <input required type="number" min="1" max="31" value={payDay} onChange={(e) => setPayDay(e.target.value)} className="w-full bg-black border border-border rounded-xl px-4 py-3 outline-none" />
+                    <input required type="number" min="1" max="31" value={payDay} onChange={(e) => setPayDay(e.target.value)} className="w-full h-[50px] bg-black border border-border rounded-xl px-4 outline-none" />
                     <span className="absolute right-4 top-1/2 -translate-y-1/2 text-text-secondary text-sm">일</span>
                 </div>
             </div>
@@ -171,11 +171,11 @@ export default function ExpenseFormModal({ isOpen, onClose, onSuccess, initialDa
           <div className="grid grid-cols-2 gap-4">
              <div>
                 <label className="block text-sm text-text-secondary mb-1.5 ml-1">시작 월</label>
-                <input required type="month" value={startDate} onChange={(e) => setStartDate(e.target.value)} className="w-full bg-black border border-border rounded-xl px-4 py-3 outline-none" />
+                <input required type="month" value={startDate} onChange={(e) => setStartDate(e.target.value)} className="w-full h-[50px] bg-black border border-border rounded-xl px-4 outline-none" />
             </div>
             <div>
                 <label className="block text-sm text-text-secondary mb-1.5 ml-1">반복 설정</label>
-                <button type="button" onClick={() => setIsOneTime(!isOneTime)} className={cn("w-full flex items-center justify-center space-x-2 border rounded-xl px-4 py-3", isOneTime ? "bg-white/10 text-white" : "bg-black border-border text-text-secondary")}>
+                <button type="button" onClick={() => setIsOneTime(!isOneTime)} className={cn("w-full h-[50px] flex items-center justify-center space-x-2 border rounded-xl px-4", isOneTime ? "bg-white/10 text-white border-white/20" : "bg-black border-border text-text-secondary")}>
                     {isOneTime ? <><Calendar className="w-4 h-4" /> <span className="text-sm">이번 달만</span></> : <><Repeat className="w-4 h-4" /> <span className="text-sm">매월 반복</span></>}
                 </button>
             </div>
