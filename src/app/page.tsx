@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
 import { 
   ChevronLeft, 
   ChevronRight, 
@@ -43,6 +44,17 @@ export default function Home() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [prevTransactions, setPrevTransactions] = useState<Transaction[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const router = useRouter();
+
+  useEffect(() => {
+    const checkUser = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        router.replace('/login');
+      }
+    };
+    checkUser();
+  }, [router]);
 
   const currentMonth = format(currentDate, 'yyyy-MM');
   const prevMonth = format(subMonths(currentDate, 1), 'yyyy-MM');

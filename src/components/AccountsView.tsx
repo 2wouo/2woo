@@ -1,16 +1,25 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { Eye, EyeOff, Copy, ExternalLink, KeyRound, CreditCard } from 'lucide-react';
+import { Eye, EyeOff, Copy, ExternalLink, KeyRound, CreditCard, LogOut } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { mapRule, type ExpenseRule } from '@/lib/db';
 import { cn } from '@/lib/utils';
 import ExpenseFormModal from './ExpenseFormModal';
+import { useRouter } from 'next/navigation';
 
 export default function AccountsView() {
   const [editingRule, setEditingRule] = useState<ExpenseRule | null>(null);
   const [rules, setRules] = useState<ExpenseRule[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    if (confirm('로그아웃 하시겠습니까?')) {
+        await supabase.auth.signOut();
+        router.push('/login');
+    }
+  };
 
   const fetchRules = useCallback(async () => {
     setIsLoading(true);
@@ -42,8 +51,17 @@ export default function AccountsView() {
 
   return (
     <div className="space-y-4 pb-24 animate-in fade-in duration-500">
-      <div className="text-sm text-text-secondary px-1">
-        결제 사이트 접속 정보와 결제 수단 메모를 관리합니다.
+      <div className="flex items-center justify-between px-1">
+          <div className="text-sm text-text-secondary">
+            결제 사이트 정보와 수단 메모를 관리합니다.
+          </div>
+          <button 
+            onClick={handleLogout}
+            className="flex items-center text-xs text-text-secondary hover:text-danger transition-colors"
+          >
+            <LogOut className="w-3.5 h-3.5 mr-1" />
+            로그아웃
+          </button>
       </div>
 
       <div className="space-y-3">
