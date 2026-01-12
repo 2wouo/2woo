@@ -169,11 +169,11 @@ export default function ExpenseFormModal({ isOpen, onClose, onSuccess, initialDa
             </div>
           </div>
           <div className="grid grid-cols-2 gap-4">
-             <div>
+             <div className="min-w-0 overflow-hidden">
                 <label className="block text-sm text-text-secondary mb-1.5 ml-1">시작 월</label>
                 <input required type="month" value={startDate} onChange={(e) => setStartDate(e.target.value)} className="w-full min-w-0 h-[50px] bg-black border border-border rounded-xl px-4 outline-none" />
             </div>
-            <div>
+            <div className="min-w-0">
                 <label className="block text-sm text-text-secondary mb-1.5 ml-1">반복 설정</label>
                 <button type="button" onClick={() => setIsOneTime(!isOneTime)} className={cn("w-full h-[50px] flex items-center justify-center space-x-2 border rounded-xl px-4", isOneTime ? "bg-white/10 text-white border-white/20" : "bg-black border-border text-text-secondary")}>
                     {isOneTime ? <><Calendar className="w-4 h-4" /> <span className="text-sm">이번 달만</span></> : <><Repeat className="w-4 h-4" /> <span className="text-sm">매월 반복</span></>}
