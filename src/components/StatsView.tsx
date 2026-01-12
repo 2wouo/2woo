@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo } from 'react';
-import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip } from 'recharts';
+import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, Tooltip, LabelList } from 'recharts';
 import { type Transaction } from '@/lib/db';
 
 interface StatsViewProps {
@@ -23,6 +23,13 @@ const CATEGORY_LABELS: Record<string, string> = {
   UTILITY: '공과금',
   FINANCE: '금융',
   ETC: '기타'
+};
+
+const formatAmount = (value: any) => {
+    if (typeof value === 'number' && value >= 10000) {
+        return `${(value / 10000).toFixed(1)}만`;
+    }
+    return value.toLocaleString();
 };
 
 export default function StatsView({ transactions, prevMonthTransactions }: StatsViewProps) {
@@ -84,10 +91,11 @@ export default function StatsView({ transactions, prevMonthTransactions }: Stats
                     data={categoryData}
                     cx="50%"
                     cy="50%"
-                    innerRadius={60}
-                    outerRadius={80}
+                    innerRadius={55}
+                    outerRadius={75}
                     paddingAngle={5}
                     dataKey="value"
+                    stroke="none"
                     >
                     {categoryData.map((entry) => (
                         <Cell key={`cell-${entry.key}`} fill={CATEGORY_COLORS[entry.key] || '#8884d8'} />
@@ -121,9 +129,9 @@ export default function StatsView({ transactions, prevMonthTransactions }: Stats
                 {diff > 0 ? '+' : ''}{diff.toLocaleString()}원 {diff > 0 ? '증가' : '감소'}
             </span>
         </div>
-        <div className="card p-6 h-[180px]">
+        <div className="card p-6 h-[200px]">
             <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={compareData}>
+                <BarChart data={compareData} margin={{ top: 20 }}>
                     <XAxis 
                         dataKey="name" 
                         axisLine={false} 
@@ -131,6 +139,7 @@ export default function StatsView({ transactions, prevMonthTransactions }: Stats
                         tick={{ fill: '#9CA3AF', fontSize: 12 }} 
                     />
                     <Tooltip 
+                        cursor={{ fill: 'transparent' }}
                         contentStyle={{ backgroundColor: '#121212', border: '1px solid #27272A', borderRadius: '8px' }}
                         itemStyle={{ color: '#fff' }}
                         formatter={(value?: number) => [`${(value || 0).toLocaleString()}원`, '금액']}
@@ -140,7 +149,9 @@ export default function StatsView({ transactions, prevMonthTransactions }: Stats
                         radius={[4, 4, 0, 0]} 
                         fill="#3B82F6" 
                         barSize={40}
-                    />
+                    >
+                        <LabelList dataKey="amount" position="top" formatter={formatAmount} style={{ fill: '#fff', fontSize: '12px', fontWeight: 'bold' }} />
+                    </Bar>
                 </BarChart>
             </ResponsiveContainer>
         </div>
@@ -157,9 +168,9 @@ export default function StatsView({ transactions, prevMonthTransactions }: Stats
                 {variableDiff > 0 ? '+' : ''}{variableDiff.toLocaleString()}원 {variableDiff > 0 ? '증가' : '감소'}
             </span>
         </div>
-        <div className="card p-6 h-[180px]">
+        <div className="card p-6 h-[200px]">
             <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={variableCompareData}>
+                <BarChart data={variableCompareData} margin={{ top: 20 }}>
                     <XAxis 
                         dataKey="name" 
                         axisLine={false} 
@@ -167,6 +178,7 @@ export default function StatsView({ transactions, prevMonthTransactions }: Stats
                         tick={{ fill: '#9CA3AF', fontSize: 12 }} 
                     />
                     <Tooltip 
+                        cursor={{ fill: 'transparent' }}
                         contentStyle={{ backgroundColor: '#121212', border: '1px solid #27272A', borderRadius: '8px' }}
                         itemStyle={{ color: '#fff' }}
                         formatter={(value?: number) => [`${(value || 0).toLocaleString()}원`, '금액']}
@@ -176,7 +188,9 @@ export default function StatsView({ transactions, prevMonthTransactions }: Stats
                         radius={[4, 4, 0, 0]} 
                         fill="#A78BFA" 
                         barSize={40}
-                    />
+                    >
+                        <LabelList dataKey="amount" position="top" formatter={formatAmount} style={{ fill: '#fff', fontSize: '12px', fontWeight: 'bold' }} />
+                    </Bar>
                 </BarChart>
             </ResponsiveContainer>
         </div>
