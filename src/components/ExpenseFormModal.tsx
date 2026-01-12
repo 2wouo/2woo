@@ -96,6 +96,7 @@ export default function ExpenseFormModal({ isOpen, onClose, onSuccess, initialDa
                 category: ruleData.category,
                 type: ruleData.type,
                 amount: ruleData.type === 'FIXED' ? ruleData.amount : undefined,
+                date: `${currentMonth}-${payDay.padStart(2, '0')}` // 날짜도 함께 업데이트
             })
             .eq('rule_id', initialData.id)
             .like('date', `${currentMonth}%`);
