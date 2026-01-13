@@ -88,32 +88,44 @@ export default function ExpenseFormModal({ isOpen, onClose, onSuccess, initialDa
       if (initialData) {
         await supabase.from('rules').update(ruleData).eq('id', initialData.id);
         
-        if (initialTransaction) {
-            // 목록에서 클릭해서 수정하는 경우: 해당 지출 내역(ID)을 직접 업데이트
-            const originalMonth = initialTransaction.date.substring(0, 7); // "YYYY-MM" 유지
-            await supabase.from('transactions')
-                .update({
-                    title: ruleData.title,
-                    category: ruleData.category,
-                    type: ruleData.type,
-                    amount: ruleData.type === 'FIXED' ? ruleData.amount : undefined,
-                    date: `${originalMonth}-${payDay.padStart(2, '0')}`,
-                    memo: monthlyMemo
-                })
-                .eq('id', initialTransaction.id);
-        } else {
-            // 계정 관리 탭 등에서 규칙만 수정하는 경우: 현재 달(Real-world)의 내역을 찾아 업데이트
-            const currentMonth = format(new Date(), 'yyyy-MM');
-            await supabase.from('transactions')
-                .update({
-                    title: ruleData.title,
-                    category: ruleData.category,
-                    type: ruleData.type,
-                    amount: ruleData.type === 'FIXED' ? ruleData.amount : undefined,
-                    date: `${currentMonth}-${payDay.padStart(2, '0')}`
-                })
-                .eq('rule_id', initialData.id)
-                .like('date', `${currentMonth}%`);
+        // 규칙이 변경되면, 이번 달을 포함한 미래의 모든 해당 지출 내역을 일괄 업데이트
+        const currentMonth = format(new Date(), 'yyyy-MM');
+        
+        // 날짜 계산 로직: 각 트랜잭션의 원래 '년-월'은 유지하되, 일(Day)만 변경해야 함
+        // 하지만 SQL만으로는 '일'만 바꾸기가 까다로움. 
+        // 일단 단순화를 위해: 제목, 카테고리, 금액, 타입은 일괄 업데이트하고
+        // 날짜는 '이번 달' 내역에 대해서만 정확히 payDay로 맞춤 (미래 내역 날짜까지 다 바꾸면 복잡해질 수 있음)
+        // 사용자가 "이름 잘못 입력해서 수정"하는 경우를 위해 제목/카테고리/금액은 미래 내역까지 싹 바꿈.
+
+        await supabase.from('transactions')
+            .update({
+                title: ruleData.title,
+                category: ruleData.category,
+                type: ruleData.type,
+                amount: ruleData.type === 'FIXED' ? ruleData.amount : undefined,
+                // 주의: 날짜는 여기서 일괄 변경하면 모든 미래 내역이 '이번 달'로 덮어씌워질 위험이 있음.
+                // 따라서 날짜 변경은 '이번 달' 내역에 대해서만 수행하거나, 별도 로직이 필요함.
+                // 여기서는 제목/정보 수정이 주 목적이므로 날짜 제외하고 정보만 업데이트.
+            })
+            .eq('rule_id', initialData.id)
+            .gte('date', `${currentMonth}-01`);
+
+        // 날짜(결제일)가 변경된 경우, 이번 달 내역은 확실하게 날짜를 맞춰줌
+        if (initialData.payDay !== ruleData.pay_day) {
+             const targetDate = `${currentMonth}-${payDay.padStart(2, '0')}`;
+             
+             // 만약 initialTransaction이 있다면 그걸 우선 업데이트 (목록에서 클릭한 경우)
+             if (initialTransaction) {
+                 await supabase.from('transactions')
+                    .update({ date: targetDate })
+                    .eq('id', initialTransaction.id);
+             } else {
+                 // 아니면 이번 달 내역 검색해서 업데이트
+                 await supabase.from('transactions')
+                    .update({ date: targetDate })
+                    .eq('rule_id', initialData.id)
+                    .like('date', `${currentMonth}%`);
+             }
         }
       } else {
         const newId = uuidv4();

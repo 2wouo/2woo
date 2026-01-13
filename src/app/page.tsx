@@ -333,7 +333,7 @@ function TransactionItem({ transaction, onUpdateAmount, onEdit, onDelete }: {
                         </div>
                     )}
                 </div>
-                <button onClick={(e) => { e.stopPropagation(); onDelete(); }} className="p-1 text-text-secondary hover:text-danger opacity-0 group-hover:opacity-100 transition-all">
+                <button onClick={(e) => { e.stopPropagation(); onDelete(); }} className="p-1 text-text-secondary/50 hover:text-danger transition-colors">
                     <Trash2 className="w-4 h-4" />
                 </button>
             </div>
